@@ -1,0 +1,73 @@
+<template>
+    <div class="slds-card" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; overflow: hidden; background: white;">
+        
+        <!-- Success Banner -->
+        <div class="slds-p-around_large slds-text-align_center" style="background: linear-gradient(135deg, #2e7d32, #4caf50); color: white;">
+            <span style="font-size: 56px; display: block; margin-bottom: 8px;">🎉</span>
+            <h2 style="font-size: 24px; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,0.15);">Booking Successfully Confirmed!</h2>
+            <p style="font-size: 14px; color: #e8f5e9; font-weight: 500; margin-top: 4px;">
+                Your booking reference is <strong style="font-size: 16px; color: white;">{bookingRef}</strong>
+            </p>
+        </div>
+
+        <!-- Body Details -->
+        <div class="slds-card__body slds-card__body_inner slds-p-around_large">
+            <!-- Flight Itinerary Summary -->
+            <div class="slds-p-around_medium slds-m-bottom_large" style="border: 1px solid #e2e8f0; border-radius: 8px; background: #fafafa;">
+                <h3 class="slds-text-heading_small slds-m-bottom_medium" style="font-weight: 700; color: #1b3a4b; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                    🛫 Flight Itinerary Summary
+                </h3>
+                
+                <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_small">
+                    <div class="slds-col slds-size_1-of-2">
+                        <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase;">Route</div>
+                        <div style="font-size: 16px; font-weight: 800; color: #0f172a;">{routeText}</div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase;">Airlines & Flight</div>
+                        <div style="font-size: 14px; font-weight: 700; color: #0f172a;">{airlineName} (Flight #{flightNumber})</div>
+                    </div>
+                </div>
+
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="slds-col slds-size_1-of-2">
+                        <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase;">Departure</div>
+                        <div style="font-weight: 600; color: #334155;">{formattedDepartureTime}</div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase;">Passengers</div>
+                        <div style="font-weight: 600; color: #334155;">{displayPassengerCount} traveler(s)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Information Alert -->
+            <div class="slds-p-around_medium" style="border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; font-size: 13px; color: #475569; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 18px; display: inline-block;">ℹ</span>
+                <span>The travel agent confirmation email has been queued and will be sent shortly.</span>
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="slds-card__footer slds-grid slds-grid_align-center slds-p-horizontal_large slds-p-vertical_medium" style="background: #fafafa; border-top: 1px solid #e5e7eb; gap: 12px; flex-wrap: wrap;">
+            <lightning-button 
+                variant="neutral" 
+                label="Search Another Flight" 
+                icon-name="utility:search" 
+                onclick={handleSearchAgain}>
+            </lightning-button>
+            <lightning-button 
+                variant="brand" 
+                label="View Detailed Itinerary" 
+                icon-name="utility:open" 
+                onclick={handleViewDetails}>
+            </lightning-button>
+            <lightning-button 
+                variant="brand-outline" 
+                label="Go to My Bookings" 
+                icon-name="utility:table" 
+                onclick={handleViewDashboard}>
+            </lightning-button>
+        </div>
+    </div>
+</template>

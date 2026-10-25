@@ -1,0 +1,136 @@
+<template>
+    <div class="slds-card" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; overflow: hidden; background: white;">
+        
+        <!-- Header -->
+        <div class="slds-card__header slds-grid" style="background: #fafafa; border-bottom: 1px solid #e5e7eb; padding: 16px 24px;">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span style="font-size: 24px; display: inline-block;">✈</span>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title" style="font-size: 18px; font-weight: 700; color: #1b3a4b;">
+                        Search Flights
+                    </h2>
+                    <p class="slds-text-body_small slds-text-color_weak">Find the best real-time fares powered by Duffel</p>
+                </div>
+            </header>
+        </div>
+
+        <!-- Body -->
+        <div class="slds-card__body slds-card__body_inner slds-p-around_large">
+            <!-- Form Error Banner -->
+            <template if:true={validationError}>
+                <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_medium" role="alert" style="border-radius: 6px;">
+                    <span class="slds-assistive-text">Error</span>
+                    <span style="font-size: 16px; margin-right: 8px;">⚠</span>
+                    <h2>{validationError}</h2>
+                </div>
+            </template>
+
+            <!-- Form Fields -->
+            <div class="slds-grid slds-wrap slds-gutters">
+                <!-- Trip Type, Cabin Class & Passenger count -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_medium">
+                    <lightning-combobox
+                        name="tripType"
+                        label="Trip Type"
+                        value={tripType}
+                        options={tripTypeOptions}
+                        onchange={handleChange}
+                        required>
+                    </lightning-combobox>
+                </div>
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_medium">
+                    <lightning-combobox
+                        name="cabinClass"
+                        label="Cabin Class"
+                        value={cabinClass}
+                        options={cabinClassOptions}
+                        onchange={handleChange}
+                        required>
+                    </lightning-combobox>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_medium">
+                    <lightning-input
+                        type="number"
+                        name="adults"
+                        label="Adult Passengers"
+                        value={adults}
+                        min="1"
+                        max="9"
+                        onchange={handleChange}
+                        required>
+                    </lightning-input>
+                </div>
+
+                <!-- Origin & Destination Airports -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_medium">
+                    <lightning-input
+                        type="text"
+                        name="origin"
+                        label="Origin Airport (IATA Code)"
+                        value={origin}
+                        placeholder="e.g. DEL"
+                        onchange={handleChange}
+                        max-length="3"
+                        message-when-pattern-mismatch="Please enter a valid 3-letter IATA code"
+                        pattern="^[A-Za-z]{3}$"
+                        required>
+                    </lightning-input>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_medium">
+                    <lightning-input
+                        type="text"
+                        name="destination"
+                        label="Destination Airport (IATA Code)"
+                        value={destination}
+                        placeholder="e.g. BOM"
+                        onchange={handleChange}
+                        max-length="3"
+                        message-when-pattern-mismatch="Please enter a valid 3-letter IATA code"
+                        pattern="^[A-Za-z]{3}$"
+                        required>
+                    </lightning-input>
+                </div>
+
+                <!-- Dates -->
+                <div class={dateColumnClass}>
+                    <lightning-input
+                        type="date"
+                        name="departureDate"
+                        label="Departure Date"
+                        value={departureDate}
+                        onchange={handleChange}
+                        required>
+                    </lightning-input>
+                </div>
+
+                <template if:true={isRoundTrip}>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_medium">
+                        <lightning-input
+                            type="date"
+                            name="returnDate"
+                            label="Return Date"
+                            value={returnDate}
+                            onchange={handleChange}
+                            required>
+                        </lightning-input>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="slds-card__footer slds-grid slds-grid_align-end slds-p-horizontal_large slds-p-vertical_medium" style="background: #fafafa; border-top: 1px solid #e5e7eb;">
+            <lightning-button
+                variant="brand"
+                label="Search Flights"
+                icon-name="utility:search"
+                onclick={handleSearch}>
+            </lightning-button>
+        </div>
+    </div>
+</template>

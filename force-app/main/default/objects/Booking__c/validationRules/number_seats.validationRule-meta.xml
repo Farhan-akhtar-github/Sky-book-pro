@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>number_seats</fullName>
+    <active>true</active>
+    <errorConditionFormula>Number_of_Seats__c &gt;= 10 &amp;&amp; NOT($Permission.Allow_Group_Booking)</errorConditionFormula>
+    <errorMessage>You are not authorized to create group bookings with 10 or more seats.</errorMessage>
+</ValidationRule>

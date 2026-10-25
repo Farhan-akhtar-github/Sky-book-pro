@@ -1,0 +1,25 @@
+.navigation-btn-active {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    border-radius: 6px !important;
+    padding: 6px 16px !important;
+    font-weight: 700 !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    transition: all 0.2s ease;
+}
+
+.navigation-btn-inactive {
+    background-color: transparent !important;
+    color: #c9ebd2 !important;
+    border-radius: 6px !important;
+    padding: 6px 16px !important;
+    font-weight: 500 !important;
+    border: 1px solid transparent !important;
+    transition: all 0.2s ease;
+}
+
+.navigation-btn-inactive:hover {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}

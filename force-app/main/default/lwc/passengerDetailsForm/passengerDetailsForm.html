@@ -1,0 +1,145 @@
+<template>
+    <div class="slds-card" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; overflow: hidden; background: white;">
+        
+        <!-- Header -->
+        <div class="slds-card__header slds-grid" style="background: #fafafa; border-bottom: 1px solid #e5e7eb; padding: 16px 24px;">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span style="font-size: 24px; display: inline-block;">👥</span>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title" style="font-size: 18px; font-weight: 700; color: #1b3a4b;">
+                        Passenger Details
+                    </h2>
+                    <p class="slds-text-body_small slds-text-color_weak">Provide traveler details for booking confirmation</p>
+                </div>
+            </header>
+        </div>
+
+        <!-- Body -->
+        <div class="slds-card__body slds-card__body_inner slds-p-around_large">
+            <!-- Form Error Banner -->
+            <template if:true={validationError}>
+                <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_medium" role="alert" style="border-radius: 6px;">
+                    <span class="slds-assistive-text">Error</span>
+                    <span style="font-size: 16px; margin-right: 8px;">⚠</span>
+                    <h2>{validationError}</h2>
+                </div>
+            </template>
+
+            <!-- Dynamic Passenger Cards Loop -->
+            <template for:each={travelersWithClasses} for:item="traveler">
+                <div key={traveler.key} class="slds-m-bottom_large slds-p-around_medium" style={traveler.cardStyle}>
+                    <h3 class="slds-text-heading_small slds-m-bottom_medium" style={traveler.cardHeaderStyle}>
+                        Passenger #{traveler.displayNumber}
+                    </h3>
+
+                    <!-- Individual Form Error Message -->
+                    <template if:true={traveler.hasError}>
+                        <div class="slds-text-color_error slds-m-bottom_small" style="font-weight: 600; font-size: 13px;">
+                            ⚠ {traveler.errorMessage}
+                        </div>
+                    </template>
+
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <!-- First Name -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <lightning-input
+                                type="text"
+                                label="First Name"
+                                name="firstName"
+                                data-index={traveler.index}
+                                value={traveler.firstName}
+                                onchange={handleInputChange}
+                                required>
+                            </lightning-input>
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <lightning-input
+                                type="text"
+                                label="Last Name"
+                                name="lastName"
+                                data-index={traveler.index}
+                                value={traveler.lastName}
+                                onchange={handleInputChange}
+                                required>
+                            </lightning-input>
+                        </div>
+
+                        <!-- Date of Birth -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <lightning-input
+                                type="date"
+                                label="Date of Birth"
+                                name="dob"
+                                data-index={traveler.index}
+                                value={traveler.dob}
+                                onchange={handleInputChange}
+                                required>
+                            </lightning-input>
+                        </div>
+
+                        <!-- Passenger Type -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                            <lightning-combobox
+                                name="passengerType"
+                                label="Passenger Type"
+                                data-index={traveler.index}
+                                value={traveler.passengerType}
+                                options={passengerTypeOptions}
+                                onchange={handleInputChange}
+                                required>
+                            </lightning-combobox>
+                        </div>
+
+                        <!-- Passport Number (Conditionally visible for International) -->
+                        <template if:true={isInternational}>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                <lightning-input
+                                    type="text"
+                                    label="Passport Number"
+                                    name="passport"
+                                    data-index={traveler.index}
+                                    value={traveler.passport}
+                                    placeholder="Enter valid passport number"
+                                    onchange={handleInputChange}
+                                    required>
+                                </lightning-input>
+                            </div>
+                        </template>
+
+                        <!-- Meal Preference (Multi-select) -->
+                        <div class="slds-col slds-size_1-of-1 slds-m-bottom_small">
+                            <lightning-checkbox-group
+                                name="mealPreference"
+                                label="Meal Preferences (Select all that apply)"
+                                data-index={traveler.index}
+                                value={traveler.mealPreference}
+                                options={mealPreferenceOptions}
+                                onchange={handleInputChange}>
+                            </lightning-checkbox-group>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="slds-card__footer slds-grid slds-grid_align-spread slds-p-horizontal_large slds-p-vertical_medium" style="background: #fafafa; border-top: 1px solid #e5e7eb;">
+            <lightning-button
+                variant="neutral"
+                label="Back to Flight Results"
+                icon-name="utility:back"
+                onclick={handleBack}>
+            </lightning-button>
+            <lightning-button
+                variant="brand"
+                label="Submit Passenger Details"
+                icon-name="utility:check"
+                onclick={handleSubmit}>
+            </lightning-button>
+        </div>
+    </div>
+</template>

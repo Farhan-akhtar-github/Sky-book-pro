@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CspTrustedSite xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Duffel_Assets_CSP</fullName>
+    <description>Allows loading flight carrier logos from assets.duffel.com</description>
+    <endpointUrl>https://assets.duffel.com</endpointUrl>
+    <isActive>true</isActive>
+    <context>LEX</context>
+    <isApplicableToConnectSrc>false</isApplicableToConnectSrc>
+    <isApplicableToFontSrc>false</isApplicableToFontSrc>
+    <isApplicableToFrameSrc>false</isApplicableToFrameSrc>
+    <isApplicableToImgSrc>true</isApplicableToImgSrc>
+    <isApplicableToMediaSrc>false</isApplicableToMediaSrc>
+    <isApplicableToStyleSrc>false</isApplicableToStyleSrc>
+</CspTrustedSite>

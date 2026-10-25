@@ -1,0 +1,65 @@
+<template>
+    <div class="slds-card slds-m-bottom_medium slds-p-around_medium result-card" style="border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); border: 1px solid #e5e7eb; transition: all 0.2s ease; background: white;">
+        <div class="slds-grid slds-grid_vertical-align-center slds-wrap">
+            
+            <!-- Airline details -->
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-m-bottom_small slds-medium-m-bottom_none">
+                <div class="slds-grid slds-grid_vertical-align-center">
+                    <template if:true={logoUrl}>
+                        <div style="margin-right: 12px; display: inline-flex; align-items: center; justify-content: center;">
+                            <img src={logoUrl} alt={airlineName} onerror={handleImageError} style="width: 36px; height: 36px; object-fit: contain; border-radius: 6px; border: 1px solid #e2e8f0; padding: 2px;" />
+                        </div>
+                    </template>
+                    <template if:false={logoUrl}>
+                        <div style="background: linear-gradient(135deg, #1b3a4b, #2a9d8f); border-radius: 6px; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; color: white; margin-right: 12px; font-weight: bold; font-size: 16px;">
+                            ✈
+                        </div>
+                    </template>
+                    <div>
+                        <div style="font-weight: 700; color: #1f2937; font-size: 14px;">{airlineName}</div>
+                        <div class="slds-text-body_small slds-text-color_weak">Flight #{flightNumber}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flight Segment, Route, Times and Duration -->
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_5-of-12 slds-m-bottom_small slds-medium-m-bottom_none">
+                <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                    <div class="slds-text-align_left">
+                        <div style="font-size: 16px; font-weight: 800; color: #1b3a4b;">{origin}</div>
+                        <div style="font-size: 11px; color: #4b5563; font-weight: 500;">{formattedDepartureTime}</div>
+                    </div>
+                    <div class="slds-grow slds-p-horizontal_medium slds-text-align_center" style="position: relative; min-width: 100px;">
+                        <span class="slds-text-body_small slds-text-color_weak" style="display: block; font-weight: 600; font-size: 10px;">{formattedDuration}</span>
+                        <div style="border-bottom: 2px dashed #cbd5e1; margin: 4px 0; position: relative;">
+                            <span style="position: absolute; right: calc(50% - 6px); top: -8px; font-size: 10px; color: #64748b;">✈</span>
+                        </div>
+                        <span class="slds-badge slds-badge_lightest" style="font-size: 9px; text-transform: uppercase; font-weight: 700; background-color: #f1f5f9; color: #475569;">{formattedCabinClass}</span>
+                    </div>
+                    <div class="slds-text-align_right">
+                        <div style="font-size: 16px; font-weight: 800; color: #1b3a4b;">{destination}</div>
+                        <div style="font-size: 11px; color: #4b5563; font-weight: 500;">{formattedArrivalTime}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price and Selection Call-to-action -->
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-text-align_right">
+                <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-end slds-wrap">
+                    <div class="slds-m-right_large slds-text-align_right slds-m-bottom_x-small slds-medium-m-bottom_none">
+                        <div style="font-size: 18px; font-weight: 800; color: #2e7d32;">{formattedPrice}</div>
+                        <div class="slds-text-body_small slds-text-color_weak" style="font-size: 11px; font-weight: 500;">{seatsText}</div>
+                    </div>
+                    <lightning-button 
+                        variant="brand" 
+                        label="Book Flight" 
+                        icon-name="utility:chevronright" 
+                        icon-position="right"
+                        onclick={handleSelectOffer}>
+                    </lightning-button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</template>

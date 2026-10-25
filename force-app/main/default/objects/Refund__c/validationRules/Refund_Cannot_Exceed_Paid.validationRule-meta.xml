@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Refund_Cannot_Exceed_Paid</fullName>
+    <active>true</active>
+    <errorConditionFormula>Refund_Amount__c &gt; Booking__r.Total_Amount__c</errorConditionFormula>
+    <errorMessage>Refund amount cannot be greater than the total booking amount.</errorMessage>
+</ValidationRule>

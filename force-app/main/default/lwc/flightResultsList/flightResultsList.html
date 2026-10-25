@@ -1,0 +1,90 @@
+<template>
+    <div>
+        <!-- Filter and Sort Dashboard Card -->
+        <div class="slds-card slds-m-bottom_medium" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; overflow: hidden; background: white;">
+            <div class="slds-p-around_large">
+                <div class="slds-grid slds-grid_vertical-align-center slds-wrap slds-gutters">
+                    <!-- Heading -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-m-bottom_medium slds-medium-m-bottom_none">
+                        <h2 style="font-size: 16px; font-weight: 800; color: #1b3a4b;">🛫 Available Offers ({totalCount})</h2>
+                        <p class="slds-text-body_small slds-text-color_weak">{displayCountText}</p>
+                    </div>
+
+                    <!-- Sort By Selection -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-m-bottom_medium slds-medium-m-bottom_none">
+                        <lightning-combobox
+                            name="sortBy"
+                            label="Sort By"
+                            value={sortBy}
+                            options={sortOptions}
+                            onchange={handleSortChange}>
+                        </lightning-combobox>
+                    </div>
+
+                    <!-- Filter By Airline -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-m-bottom_medium slds-medium-m-bottom_none">
+                        <lightning-combobox
+                            name="filterAirline"
+                            label="Airline"
+                            value={filterAirline}
+                            options={airlineOptions}
+                            onchange={handleAirlineChange}>
+                        </lightning-combobox>
+                    </div>
+
+                    <!-- Filter By Max Price Slider -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12">
+                        <template if:true={hasOffers}>
+                            <lightning-input
+                                type="range"
+                                name="filterMaxPrice"
+                                label={maxPriceLabel}
+                                min={minPrice}
+                                max={maxPrice}
+                                value={filterMaxPrice}
+                                onchange={handleMaxPriceChange}>
+                            </lightning-input>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-card__footer slds-grid slds-grid_align-spread slds-p-horizontal_large slds-p-vertical_medium" style="background: #fafafa; border-top: 1px solid #e5e7eb;">
+                <lightning-button 
+                    variant="neutral" 
+                    label="Back to Search" 
+                    icon-name="utility:back" 
+                    onclick={handleBack}>
+                </lightning-button>
+                <lightning-button 
+                    variant="text" 
+                    label="Clear Filters" 
+                    icon-name="utility:refresh" 
+                    onclick={handleClearFilters}
+                    disabled={isFiltersClear}>
+                </lightning-button>
+            </div>
+        </div>
+
+        <!-- Offers Iteration block -->
+        <template if:true={hasProcessedOffers}>
+            <template for:each={processedOffers} for:item="offer">
+                <c-flight-result-card
+                    key={offer.offerId}
+                    offer={offer}
+                    onofferselected={handleOfferSelected}>
+                </c-flight-result-card>
+            </template>
+        </template>
+
+        <!-- Empty State Block -->
+        <template if:false={hasProcessedOffers}>
+            <div class="slds-card slds-p-around_large slds-text-align_center" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;">
+                <span style="font-size: 48px; display: block; margin-bottom: 12px;">🔍</span>
+                <h3 class="slds-text-heading_small" style="font-weight: 700; color: #1b3a4b;">No Flights Match Your Criteria</h3>
+                <p class="slds-text-color_weak slds-m-bottom_medium">Try clearing or adjust your sorting and filters options above.</p>
+                <lightning-button label="Reset Filters" onclick={handleClearFilters}></lightning-button>
+            </div>
+        </template>
+    </div>
+</template>

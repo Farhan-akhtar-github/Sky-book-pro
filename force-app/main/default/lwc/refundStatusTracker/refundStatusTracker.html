@@ -1,0 +1,21 @@
+<template>
+    <template if:true={refundStatus}>
+        <div class="slds-box slds-theme_shade slds-m-top_medium" style="border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc;">
+            <h3 class="slds-text-title_caps slds-m-bottom_small" style="font-weight: 700; color: #475569; font-size: 11px;">
+                💸 Refund Status: {refundStatus}
+            </h3>
+            
+            <lightning-progress-indicator current-step={refundStatus} type="path" has-error={isRejected}>
+                <lightning-progress-step label="Initiated" value="Initiated"></lightning-progress-step>
+                <lightning-progress-step label="Processing" value="Processing"></lightning-progress-step>
+                <lightning-progress-step label="Completed" value="Completed"></lightning-progress-step>
+            </lightning-progress-indicator>
+
+            <template if:true={isRejected}>
+                <p class="slds-text-color_error slds-m-top_small" style="font-size: 12px; font-weight: 600;">
+                    Refund request has been rejected. Please contact support.
+                </p>
+            </template>
+        </div>
+    </template>
+</template>

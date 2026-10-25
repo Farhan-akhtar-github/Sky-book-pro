@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>SkyBook Channel</masterLabel>
+    <isExposed>true</isExposed>
+    <description>Message Channel for SkyBook Pro booking operations</description>
+    <lightningMessageFields>
+        <fieldName>bookingId</fieldName>
+        <description>The ID of the booking record</description>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>status</fieldName>
+        <description>The status of the booking or operation</description>
+    </lightningMessageFields>
+</LightningMessageChannel>

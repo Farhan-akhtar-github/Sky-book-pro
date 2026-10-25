@@ -1,0 +1,169 @@
+<template>
+    <div class="slds-card" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; overflow: hidden; background: white; position: relative;">
+        <!-- Loading Spinner -->
+        <template if:true={loading}>
+            <lightning-spinner alternative-text="Creating Booking..." size="medium"></lightning-spinner>
+        </template>
+
+        <!-- Header -->
+        <div class="slds-card__header slds-grid" style="background: #fafafa; border-bottom: 1px solid #e5e7eb; padding: 16px 24px;">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span style="font-size: 24px; display: inline-block;">📋</span>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title" style="font-size: 18px; font-weight: 700; color: #1b3a4b;">
+                        Review & Confirm Booking
+                    </h2>
+                    <p class="slds-text-body_small slds-text-color_weak">Double check details before finalizing your ticket</p>
+                </div>
+            </header>
+        </div>
+
+        <!-- Body -->
+        <div class="slds-card__body slds-card__body_inner slds-p-around_large">
+            <!-- Error Banner -->
+            <template if:true={errorMessage}>
+                <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_medium" role="alert" style="border-radius: 6px;">
+                    <span class="slds-assistive-text">Error</span>
+                    <span style="font-size: 16px; margin-right: 8px;">⚠</span>
+                    <h2>{errorMessage}</h2>
+                </div>
+            </template>
+
+            <div class="slds-grid slds-wrap slds-gutters">
+                <!-- Left Column (Flight and Passenger Summaries) -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_7-of-12">
+                    
+                    <!-- Flight Detail Card -->
+                    <div class="slds-m-bottom_large slds-p-around_medium" style="border: 1px solid #e2e8f0; border-radius: 8px; background: #fafafa;">
+                        <h3 class="slds-text-heading_small slds-m-bottom_medium" style="font-weight: 700; color: #1b3a4b; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                            ✈ Flight Information
+                        </h3>
+                        
+                        <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_small">
+                            <div class="slds-col slds-size_1-of-2">
+                                <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase;">Route</div>
+                                <div style="font-size: 16px; font-weight: 800; color: #0f172a;">{routeText}</div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase;">Airline & Flight</div>
+                                <div style="font-size: 14px; font-weight: 700; color: #0f172a;">{airlineName} (Flight #{flightNumber})</div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-2">
+                                <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase;">Departure</div>
+                                <div style="font-size: 13px; font-weight: 600; color: #334155;">{formattedDepartureTime}</div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase;">Arrival</div>
+                                <div style="font-size: 13px; font-weight: 600; color: #334155;">{formattedArrivalTime}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Passenger Details List Card -->
+                    <div class="slds-m-bottom_large slds-p-around_medium" style="border: 1px solid #e2e8f0; border-radius: 8px; background: white;">
+                        <h3 class="slds-text-heading_small slds-m-bottom_medium" style="font-weight: 700; color: #1b3a4b; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                            👤 Travelers ({displayPassengerCount})
+                        </h3>
+
+                        <template for:each={formattedPassengers} for:item="p">
+                            <div key={p.key} class="slds-p-vertical_small" style="border-bottom: 1px dashed #e2e8f0; font-size: 13px;">
+                                <div class="slds-grid slds-grid_align-spread">
+                                    <span style="font-weight: 700; color: #0f172a;">{p.firstName} {p.lastName}</span>
+                                    <span class="slds-badge slds-badge_lightest" style="font-size: 10px; background-color: #f1f5f9; color: #475569;">{p.passengerType}</span>
+                                </div>
+                                <div class="slds-grid slds-wrap slds-m-top_xx-small" style="color: #64748b; font-size: 11px;">
+                                    <div class="slds-m-right_large">DOB: {p.dob}</div>
+                                    <div class="slds-m-right_large">Meal: {p.formattedMeals}</div>
+                                    <template if:true={p.passport}>
+                                        <div>Passport: {p.passport}</div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                </div>
+
+                <!-- Right Column (Fare Details & Booking Contact) -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_5-of-12">
+                    
+                    <!-- Primary Booking Contact Selection -->
+                    <div class="slds-m-bottom_large slds-p-around_medium" style="border: 1px solid #e2e8f0; border-radius: 8px; background: #fafafa;">
+                        <h3 class="slds-text-heading_small slds-m-bottom_medium" style="font-weight: 700; color: #1b3a4b; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                            🔑 Booking Owner
+                        </h3>
+                        <lightning-record-picker
+                            label="Primary Booking Contact (Contact Record)"
+                            object-api-name="Contact"
+                            placeholder="Search contacts..."
+                            required
+                            onchange={handleContactChange}>
+                        </lightning-record-picker>
+                        <span style="font-size: 11px; color: #64748b; display: block; margin-top: 6px;">
+                            Assign an existing Salesforce contact as the owner of this booking.
+                        </span>
+                    </div>
+
+                    <!-- Fare Breakdown -->
+                    <div class="slds-m-bottom_large slds-p-around_medium" style="border: 1px solid #e2e8f0; border-radius: 8px; background: white;">
+                        <h3 class="slds-text-heading_small slds-m-bottom_medium" style="font-weight: 700; color: #1b3a4b; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                            💵 Fare Details
+                        </h3>
+
+                        <div class="slds-grid slds-grid_align-spread slds-m-bottom_small" style="font-size: 13px;">
+                            <span style="color: #64748b;">Fare ({displayPassengerCount} traveler[s] x {formattedPricePerPassenger})</span>
+                            <span style="font-weight: 600; color: #0f172a;">{formattedTotalAmount}</span>
+                        </div>
+
+                        <div class="slds-grid slds-grid_align-spread slds-m-bottom_small" style="font-size: 13px;">
+                            <span style="color: #64748b;">Taxes & Fees</span>
+                            <span style="font-weight: 600; color: #0f172a;">{formattedTaxes}</span>
+                        </div>
+
+                        <div class="slds-divider" style="border-bottom: 1px solid #e2e8f0; margin: 12px 0;"></div>
+
+                        <div class="slds-grid slds-grid_align-spread" style="font-size: 16px; font-weight: 800;">
+                            <span style="color: #0f172a;">Total Price</span>
+                            <span style="color: #2e7d32;">{formattedTotalAmount}</span>
+                        </div>
+                    </div>
+
+                    <!-- Terms checkbox -->
+                    <div class="slds-m-bottom_large slds-p-around_medium" style="border: 1px solid #e2e8f0; border-radius: 8px; background: #fafafa;">
+                        <lightning-input
+                            type="checkbox"
+                            label="I accept the airline terms and booking conditions."
+                            name="terms"
+                            checked={termsAccepted}
+                            onchange={handleTermsChange}
+                            required>
+                        </lightning-input>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="slds-card__footer slds-grid slds-grid_align-spread slds-p-horizontal_large slds-p-vertical_medium" style="background: #fafafa; border-top: 1px solid #e5e7eb;">
+            <lightning-button
+                variant="neutral"
+                label="Back to Passengers"
+                icon-name="utility:back"
+                onclick={handleBack}>
+            </lightning-button>
+            <lightning-button
+                variant="success"
+                label="Confirm & Create Booking"
+                icon-name="utility:check"
+                onclick={handleConfirm}
+                disabled={isCreateDisabled}>
+            </lightning-button>
+        </div>
+    </div>
+</template>

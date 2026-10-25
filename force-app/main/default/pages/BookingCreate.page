@@ -1,0 +1,169 @@
+<apex:page controller="BookingController" lightningStylesheets="true" title="SkyBook Pro – Confirm Booking" docType="html-5.0">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+        <style>
+            :root {
+                --primary: hsl(210, 80%, 40%);
+                --primary-dark: hsl(210, 80%, 30%);
+                --primary-light: hsl(210, 80%, 95%);
+                --success: hsl(140, 60%, 40%);
+                --danger: hsl(0, 75%, 45%);
+                --warning: hsl(38, 92%, 50%);
+                --bg: #f3f4f6;
+                --card: #ffffff;
+                --text: #1f2937;
+                --text-muted: #6b7280;
+                --border: #e5e7eb;
+                --radius: 10px;
+                --shadow: 0 2px 12px rgba(0,0,0,0.08);
+            }
+            body, .bPageBlock, .bPageBlockSection, .pbBody, .pbHeader { font-family: 'Inter', sans-serif !important; }
+            .skp-page { background: var(--bg); min-height: 100vh; padding: 24px; box-sizing: border-box; }
+            .skp-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+            .skp-logo { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), hsl(210, 80%, 55%)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px; }
+            .skp-title { font-size: 24px; font-weight: 700; color: var(--text); }
+            .skp-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+            .skp-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 20px; }
+            .skp-card-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 18px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+            .skp-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
+            .skp-summary-item { display: flex; flex-direction: column; gap: 4px; }
+            .skp-summary-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+            .skp-summary-value { font-size: 15px; font-weight: 600; color: var(--text); }
+            .skp-price-value { font-size: 20px; font-weight: 700; color: var(--primary); }
+            .skp-route-display { display: flex; align-items: center; gap: 10px; }
+            .skp-route-code { font-size: 24px; font-weight: 700; color: var(--text); }
+            .skp-route-arrow { color: var(--text-muted); font-size: 18px; }
+            .skp-alert { padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 16px; }
+            .skp-alert-error   { background: hsl(0, 75%, 97%); color: var(--danger); border: 1px solid hsl(0, 75%, 85%); }
+            .skp-alert-success { background: hsl(140, 60%, 96%); color: var(--success); border: 1px solid hsl(140, 60%, 80%); }
+            .skp-alert-info    { background: hsl(210, 80%, 97%); color: var(--primary); border: 1px solid hsl(210, 80%, 85%); }
+            .skp-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 16px; }
+            .skp-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+            .skp-lookup input, .skp-lookup select { width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; color: var(--text); font-family: 'Inter', sans-serif; box-sizing: border-box; }
+            .skp-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+            .skp-btn { padding: 11px 26px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; font-family: 'Inter', sans-serif; }
+            .skp-btn:active { transform: scale(0.98); }
+            .skp-btn-primary { background: var(--primary); color: white; }
+            .skp-btn-primary:hover { background: var(--primary-dark); }
+            .skp-btn-ghost { background: white; color: var(--text-muted); border: 1.5px solid var(--border); }
+            .skp-btn-ghost:hover { background: var(--bg); }
+            .skp-divider { height: 1px; background: var(--border); margin: 16px 0; }
+            .skp-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: var(--primary-light); color: var(--primary); }
+        </style>
+    </head>
+    <apex:form id="bookingForm">
+        <div class="skp-page">
+
+            <!-- Header -->
+            <div class="skp-header">
+                <div class="skp-logo">✈</div>
+                <div>
+                    <div class="skp-title">SkyBook Pro</div>
+                    <div class="skp-subtitle">Confirm Booking</div>
+                </div>
+            </div>
+
+            <!-- Alert Panel (reRendered after confirmBooking) -->
+            <apex:outputPanel id="alertPanel">
+                <apex:outputPanel rendered="{!NOT(ISBLANK(errorMessage))}">
+                    <div class="skp-alert skp-alert-error">⚠ <apex:outputText value="{!errorMessage}"/></div>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!NOT(ISBLANK(successMessage))}">
+                    <div class="skp-alert skp-alert-success">✓ <apex:outputText value="{!successMessage}"/></div>
+                </apex:outputPanel>
+            </apex:outputPanel>
+
+            <!-- Warning when offerId is missing -->
+            <apex:outputPanel rendered="{!ISBLANK(offerId)}">
+                <div class="skp-alert skp-alert-info">
+                    ℹ No flight offer loaded. Please return to
+                    <apex:commandLink value="Flight Search" action="{!cancel}" styleClass="skp-link"/> and select a flight.
+                </div>
+            </apex:outputPanel>
+
+            <!-- Flight Summary Card -->
+            <apex:outputPanel rendered="{!NOT(ISBLANK(offerId))}">
+                <div class="skp-card">
+                    <div class="skp-card-title">🛫 Selected Flight Details</div>
+
+                    <div class="skp-route-display" style="margin-bottom: 20px;">
+                        <span class="skp-route-code"><apex:outputText value="{!origin}"/></span>
+                        <span class="skp-route-arrow">→</span>
+                        <span class="skp-route-code"><apex:outputText value="{!destination}"/></span>
+                    </div>
+
+                    <div class="skp-summary-grid">
+                        <div class="skp-summary-item">
+                            <span class="skp-summary-label">Airline</span>
+                            <span class="skp-summary-value">
+                                <apex:outputText value="{!IF(ISBLANK(airline), 'N/A', airline)}"/>
+                            </span>
+                        </div>
+                        <div class="skp-summary-item">
+                            <span class="skp-summary-label">Cabin Class</span>
+                            <span class="skp-summary-value">
+                                <span class="skp-badge"><apex:outputText value="{!cabinClassLabel}"/></span>
+                            </span>
+                        </div>
+                        <div class="skp-summary-item">
+                            <span class="skp-summary-label">Passengers</span>
+                            <span class="skp-summary-value">
+                                <apex:outputText value="{!seats}"/>
+                            </span>
+                        </div>
+                        <div class="skp-summary-item">
+                            <span class="skp-summary-label">Total Price</span>
+                            <span class="skp-price-value">
+                                <apex:outputText value="{!currencyCode}"/>&#160;
+                                <apex:outputText value="{0,number,#,##0.00}">
+                                    <apex:param value="{!price}"/>
+                                </apex:outputText>
+                            </span>
+                        </div>
+                        <div class="skp-summary-item">
+                            <span class="skp-summary-label">Offer ID</span>
+                            <span class="skp-summary-value" style="font-size:11px; color: var(--text-muted); word-break: break-all;">
+                                <apex:outputText value="{!offerId}"/>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Passenger Selection Card -->
+                <div class="skp-card">
+                    <div class="skp-card-title">👤 Select Passenger</div>
+
+                    <div class="skp-field">
+                        <label class="skp-label">Contact (Passenger)</label>
+                        <div class="skp-lookup">
+                            <apex:inputField value="{!dummyBooking.Passenger__c}" id="passengerLookup"/>
+                        </div>
+                        <span style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+                            Search for an existing Contact record to assign as the passenger.
+                        </span>
+                    </div>
+
+                    <div class="skp-divider"></div>
+
+                    <!-- Action Buttons -->
+                    <div class="skp-actions">
+                        <apex:commandButton
+                            value="✓ Confirm Booking"
+                            action="{!confirmBooking}"
+                            styleClass="skp-btn skp-btn-primary"
+                            id="confirmBtn"
+                            reRender="alertPanel"/>
+                        <apex:commandButton
+                            value="← Back to Flight Search"
+                            action="{!cancel}"
+                            styleClass="skp-btn skp-btn-ghost"
+                            id="cancelBtn"
+                            immediate="true"/>
+                    </div>
+                </div>
+            </apex:outputPanel>
+
+        </div>
+    </apex:form>
+</apex:page>

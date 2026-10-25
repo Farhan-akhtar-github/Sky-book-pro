@@ -1,0 +1,392 @@
+<apex:page controller="BookingDetailController" lightningStylesheets="true" title="SkyBook Pro – Booking Details" docType="html-5.0">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+        <style>
+            :root {
+                --primary:       hsl(210, 80%, 40%);
+                --primary-dark:  hsl(210, 80%, 30%);
+                --primary-light: hsl(210, 80%, 95%);
+                --success:       hsl(140, 60%, 40%);
+                --danger:        hsl(0, 75%, 45%);
+                --bg:            #f3f4f6;
+                --card:          #ffffff;
+                --text:          #1f2937;
+                --text-muted:    #6b7280;
+                --border:        #e5e7eb;
+                --radius:        10px;
+                --shadow:        0 2px 12px rgba(0,0,0,0.08);
+            }
+
+            body, .bPageBlock, .bPageBlockSection, .pbBody, .pbHeader {
+                font-family: 'Inter', sans-serif !important;
+            }
+
+            /* ── Layout ─────────────────────────────────────────── */
+            .skp-page       { background: var(--bg); min-height: 100vh; padding: 24px; box-sizing: border-box; }
+            .skp-header     { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+            .skp-logo       { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), hsl(210, 80%, 55%)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px; }
+            .skp-title      { font-size: 24px; font-weight: 700; color: var(--text); }
+            .skp-subtitle   { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+            /* ── Cards ──────────────────────────────────────────── */
+            .skp-card       { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 20px; }
+            .skp-card-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 18px; display: flex; align-items: center; gap: 8px; border-bottom: 1.5px solid var(--border); padding-bottom: 10px; }
+
+            /* ── Detail Grid ────────────────────────────────────── */
+            .skp-detail-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 20px;
+                margin-bottom: 15px;
+            }
+            .skp-detail-group {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+            .skp-detail-label {
+                font-size: 11px;
+                font-weight: 600;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+            .skp-detail-val {
+                font-size: 14px;
+                color: var(--text);
+                font-weight: 500;
+            }
+
+            /* ── Buttons ─────────────────────────────────────────── */
+            .skp-btn         { padding: 10px 22px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; font-family: 'Inter', sans-serif; text-decoration: none; display: inline-block; }
+            .skp-btn:active  { transform: scale(0.98); }
+            .skp-btn-primary { background: var(--primary); color: white; }
+            .skp-btn-primary:hover { background: var(--primary-dark); }
+            .skp-btn-outline { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
+            .skp-btn-outline:hover { background: var(--primary-light); }
+            .skp-actions-row { display: flex; align-items: center; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+
+            /* ── Alerts ──────────────────────────────────────────── */
+            .skp-alert         { padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 16px; }
+            .skp-alert-error   { background: hsl(0, 75%, 97%); color: var(--danger); border: 1px solid hsl(0, 75%, 85%); }
+
+            /* ── Tables ──────────────────────────────────────────── */
+            .skp-table-wrap { overflow-x: auto; }
+            .skp-table      { width: 100%; border-collapse: collapse; font-size: 13px; }
+            .skp-table thead th { padding: 10px 14px; background: hsl(210, 20%, 97%); color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1.5px solid var(--border); text-align: left; white-space: nowrap; }
+            .skp-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+            .skp-table tbody tr:hover { background: hsl(210, 80%, 98%); }
+            .skp-table tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
+
+            /* ── Status badges ───────────────────────────────────── */
+            .skp-badge          { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+            .skp-badge-green    { background: hsl(140, 60%, 92%); color: hsl(140, 60%, 28%); }
+            .skp-badge-blue     { background: hsl(210, 80%, 92%); color: hsl(210, 80%, 28%); }
+            .skp-badge-yellow   { background: hsl(45, 90%, 92%);  color: hsl(45, 90%, 28%);  }
+            .skp-badge-red      { background: hsl(0, 75%, 92%);   color: hsl(0, 75%, 30%);   }
+            .skp-badge-grey     { background: hsl(210, 10%, 92%); color: hsl(210, 10%, 35%); }
+
+            /* ── Misc ────────────────────────────────────────────── */
+            .skp-amount  { font-weight: 700; color: var(--primary); }
+            .skp-empty   { text-align: center; padding: 32px 24px; color: var(--text-muted); font-size: 14px; }
+        </style>
+    </head>
+    <apex:form id="mainForm">
+        <div class="skp-page">
+
+            <!-- ══════════════════════════════════════════════════
+                 Page Header
+            ═══════════════════════════════════════════════════ -->
+            <div class="skp-header">
+                <div class="skp-logo">✈</div>
+                <div>
+                    <div class="skp-title">SkyBook Pro</div>
+                    <div class="skp-subtitle">Booking Details &amp; History</div>
+                </div>
+            </div>
+
+            <!-- ── Error Panel ─────────────────────────────────── -->
+            <apex:outputPanel id="errorPanel" rendered="{!NOT(bookingFound)}">
+                <div class="skp-card">
+                    <div class="skp-alert skp-alert-error">
+                        ⚠ <apex:outputText value="{!errorMessage}"/>
+                    </div>
+                    <div class="skp-actions-row">
+                        <apex:commandButton value="Back to Booking Search" action="{!goToBookingSearch}" styleClass="skp-btn skp-btn-primary"/>
+                    </div>
+                </div>
+            </apex:outputPanel>
+
+            <apex:outputPanel id="detailPanel" rendered="{!bookingFound}">
+                <!-- ══════════════════════════════════════════════════
+                     Section 1 · Booking Summary
+                ═══════════════════════════════════════════════════ -->
+                <div class="skp-card">
+                    <div class="skp-card-title">
+                        📋 Booking Summary — <apex:outputText value="{!booking.Name}"/>
+                    </div>
+                    <div class="skp-detail-grid">
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Booking Status</span>
+                            <span class="skp-detail-val">
+                                <span class="skp-badge {!statusBadgeClass}">
+                                    <apex:outputText value="{!booking.Booking_Status__c}"/>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Booking Date</span>
+                            <span class="skp-detail-val">
+                                <apex:outputText value="{0,date,dd/MM/yyyy}">
+                                    <apex:param value="{!booking.Booking_Date__c}"/>
+                                </apex:outputText>
+                            </span>
+                        </div>
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Number of Seats</span>
+                            <span class="skp-detail-val"><apex:outputText value="{!booking.Number_of_Seats__c}"/></span>
+                        </div>
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Seat Class</span>
+                            <span class="skp-detail-val"><apex:outputText value="{!booking.Seat_Class__c}"/></span>
+                        </div>
+                    </div>
+
+                    <div class="skp-detail-grid">
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Base Fare</span>
+                            <span class="skp-detail-val skp-amount">
+                                <apex:outputText value="{0,number,#,##0.00}">
+                                    <apex:param value="{!booking.Base_Fare__c}"/>
+                                </apex:outputText>
+                            </span>
+                        </div>
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Taxes &amp; Fees</span>
+                            <span class="skp-detail-val skp-amount">
+                                <apex:outputText value="{0,number,#,##0.00}">
+                                    <apex:param value="{!booking.Taxes_Fees__c}"/>
+                                </apex:outputText>
+                            </span>
+                        </div>
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Total Amount</span>
+                            <span class="skp-detail-val skp-amount">
+                                <apex:outputText value="{0,number,#,##0.00}">
+                                    <apex:param value="{!booking.Total_Amount__c}"/>
+                                </apex:outputText>
+                            </span>
+                        </div>
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Payment Reference</span>
+                            <span class="skp-detail-val"><apex:outputText value="{!IF(ISBLANK(booking.Payment_Reference__c), 'N/A', booking.Payment_Reference__c)}"/></span>
+                        </div>
+                    </div>
+
+                    <div class="skp-detail-grid">
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Agent / Owner</span>
+                            <span class="skp-detail-val"><apex:outputText value="{!booking.User__r.Name}"/></span>
+                        </div>
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Flight Route</span>
+                            <span class="skp-detail-val">
+                                <apex:outputText value="{!booking.Flight__r.Name}"/> 
+                                (<apex:outputText value="{!booking.Flight__r.Origin_Airport__c}"/> → <apex:outputText value="{!booking.Flight__r.Destination_Airport__c}"/>)
+                            </span>
+                        </div>
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Airline</span>
+                            <span class="skp-detail-val"><apex:outputText value="{!booking.Flight__r.Airline_Name__c}"/></span>
+                        </div>
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Flight Departure</span>
+                            <span class="skp-detail-val">
+                                <apex:outputText value="{0,date,dd/MM/yyyy HH:mm}">
+                                    <apex:param value="{!booking.Flight__r.Departure_DateTime__c}"/>
+                                </apex:outputText>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══════════════════════════════════════════════════
+                     Section 2 · Passenger Info (Contact Details)
+                ═══════════════════════════════════════════════════ -->
+                <div class="skp-card">
+                    <div class="skp-card-title">👤 Contact Passenger Information</div>
+                    <div class="skp-detail-grid">
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Contact Name</span>
+                            <span class="skp-detail-val"><apex:outputText value="{!booking.Passenger__r.Name}"/></span>
+                        </div>
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Email Address</span>
+                            <span class="skp-detail-val"><apex:outputText value="{!IF(ISBLANK(booking.Passenger__r.Email), 'N/A', booking.Passenger__r.Email)}"/></span>
+                        </div>
+                        <div class="skp-detail-group">
+                            <span class="skp-detail-label">Phone Number</span>
+                            <span class="skp-detail-val"><apex:outputText value="{!IF(ISBLANK(booking.Passenger__r.Phone), 'N/A', booking.Passenger__r.Phone)}"/></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══════════════════════════════════════════════════
+                     Section 2b · Passenger Detail Records
+                ═══════════════════════════════════════════════════ -->
+                <div class="skp-card">
+                    <div class="skp-card-title">👥 Passenger Details ({!passengerDetails.size})</div>
+                    <apex:outputPanel rendered="{!passengerDetails.size == 0}">
+                        <div class="skp-empty">No additional passenger details listed.</div>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!passengerDetails.size > 0}">
+                        <div class="skp-table-wrap">
+                            <table class="skp-table">
+                                <thead>
+                                    <tr>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Date of Birth</th>
+                                        <th>Passport Number</th>
+                                        <th>Type</th>
+                                        <th>Seat Number</th>
+                                        <th>Meal Preference</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <apex:repeat value="{!passengerDetails}" var="pd">
+                                        <tr>
+                                            <td><strong><apex:outputText value="{!pd.Name}"/></strong></td>
+                                            <td><apex:outputText value="{!pd.Last_Name__c}"/></td>
+                                            <td>
+                                                <apex:outputText value="{0,date,dd/MM/yyyy}">
+                                                    <apex:param value="{!pd.Date_of_Birth__c}"/>
+                                                </apex:outputText>
+                                            </td>
+                                            <td><apex:outputText value="{!pd.Passport_Number__c}"/></td>
+                                            <td><apex:outputText value="{!pd.Passenger_Type__c}"/></td>
+                                            <td><apex:outputText value="{!IF(ISBLANK(pd.Seat_Number__c), 'N/A', pd.Seat_Number__c)}"/></td>
+                                            <td><apex:outputText value="{!pd.Meal_Preference__c}"/></td>
+                                        </tr>
+                                    </apex:repeat>
+                                </tbody>
+                            </table>
+                        </div>
+                    </apex:outputPanel>
+                </div>
+
+                <!-- ══════════════════════════════════════════════════
+                     Section 3 · Flight Segments
+                ═══════════════════════════════════════════════════ -->
+                <div class="skp-card">
+                    <div class="skp-card-title">✈ Flight Segments</div>
+                    <apex:outputPanel rendered="{!flightSegments.size == 0}">
+                        <div class="skp-empty">No flight segments defined for this booking.</div>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!flightSegments.size > 0}">
+                        <div class="skp-table-wrap">
+                            <table class="skp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order</th>
+                                        <th>Origin</th>
+                                        <th>Destination</th>
+                                        <th>Airline Code</th>
+                                        <th>Flight Number</th>
+                                        <th>Departure Time</th>
+                                        <th>Arrival Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <apex:repeat value="{!flightSegments}" var="fs">
+                                        <tr>
+                                            <td><apex:outputText value="{!fs.Segment_Order__c}"/></td>
+                                            <td><strong><apex:outputText value="{!fs.Name}"/></strong></td>
+                                            <td><apex:outputText value="{!fs.Destination__c}"/></td>
+                                            <td><apex:outputText value="{!fs.Carrier_Code__c}"/></td>
+                                            <td><apex:outputText value="{!fs.Flight_Number__c}"/></td>
+                                            <td>
+                                                <apex:outputText value="{0,date,dd/MM/yyyy HH:mm}">
+                                                    <apex:param value="{!fs.Departure_DateTime__c}"/>
+                                                </apex:outputText>
+                                            </td>
+                                            <td>
+                                                <apex:outputText value="{0,date,dd/MM/yyyy HH:mm}">
+                                                    <apex:param value="{!fs.Arrival_DateTime__c}"/>
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                    </apex:repeat>
+                                </tbody>
+                            </table>
+                        </div>
+                    </apex:outputPanel>
+                </div>
+
+                <!-- ══════════════════════════════════════════════════
+                     Section 4 · Refunds
+                ═══════════════════════════════════════════════════ -->
+                <div class="skp-card">
+                    <div class="skp-card-title">💵 Refund Records</div>
+                    <apex:outputPanel rendered="{!refunds.size == 0}">
+                        <div class="skp-empty">No refund logs for this booking.</div>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!refunds.size > 0}">
+                        <div class="skp-table-wrap">
+                            <table class="skp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Requested Date</th>
+                                        <th>Completed Date</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <apex:repeat value="{!refunds}" var="rf">
+                                        <tr>
+                                            <td>
+                                                <apex:outputText value="{0,date,dd/MM/yyyy}">
+                                                    <apex:param value="{!rf.Requested_Date__c}"/>
+                                                </apex:outputText>
+                                            </td>
+                                            <td>
+                                                <apex:outputText value="{0,date,dd/MM/yyyy}">
+                                                    <apex:param value="{!rf.Completed_Date__c}"/>
+                                                </apex:outputText>
+                                            </td>
+                                            <td>
+                                                <span class="skp-amount">
+                                                    <apex:outputText value="{0,number,#,##0.00}">
+                                                        <apex:param value="{!rf.Refund_Amount__c}"/>
+                                                    </apex:outputText>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="skp-badge {!IF(rf.Refund_Status__c == 'Completed', 'skp-badge-green', IF(rf.Refund_Status__c == 'Pending', 'skp-badge-yellow', 'skp-badge-grey'))}">
+                                                    <apex:outputText value="{!rf.Refund_Status__c}"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </apex:repeat>
+                                </tbody>
+                            </table>
+                        </div>
+                    </apex:outputPanel>
+                </div>
+
+                <!-- ══════════════════════════════════════════════════
+                     Section 5 · Navigation
+                ═══════════════════════════════════════════════════ -->
+                <div class="skp-card">
+                    <div class="skp-actions-row">
+                        <apex:commandButton value="Back to Booking Search" action="{!goToBookingSearch}" styleClass="skp-btn skp-btn-primary"/>
+                        <apex:commandButton value="Back to Flight Search" action="{!goToFlightSearch}" styleClass="skp-btn skp-btn-outline"/>
+                    </div>
+                </div>
+            </apex:outputPanel>
+
+        </div>
+    </apex:form>
+</apex:page>

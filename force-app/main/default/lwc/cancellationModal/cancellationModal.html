@@ -1,0 +1,73 @@
+<template>
+    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small" aria-modal="true" aria-labelledby="modal-heading-01">
+        <div class="slds-modal__container" style="color: #1f2937;">
+            <!-- Modal Header -->
+            <header class="slds-modal__header" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={handleClose} disabled={processing} style="color: #64748b;">
+                    <lightning-icon icon-name="utility:close" alternative-text="close" size="small" variant="neutral"></lightning-icon>
+                </button>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium" style="font-weight: 800; color: #991b1b;">
+                    ⚠️ Cancel Flight Itinerary
+                </h2>
+            </header>
+
+            <!-- Modal Content -->
+            <div class="slds-modal__content slds-p-around_large" style="position: relative;">
+                <!-- Loading Spinner -->
+                <template if:true={processing}>
+                    <lightning-spinner alternative-text="Processing cancellation..." size="medium" variant="brand"></lightning-spinner>
+                </template>
+
+                <!-- Booking Summary -->
+                <div class="slds-m-bottom_medium slds-p-around_medium" style="background: #fafafa; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;">
+                    <h3 style="font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; font-size: 11px;">Booking Details</h3>
+                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                        <span style="color: #64748b;">Booking Reference</span>
+                        <strong style="color: #0f172a;">{bookingName}</strong>
+                    </div>
+                    <div class="slds-grid slds-grid_align-spread">
+                        <span style="color: #64748b;">Total Fare Paid</span>
+                        <strong style="color: #2e7d32;">{bookingTotalAmount}</strong>
+                    </div>
+                </div>
+
+                <!-- Refund Policy Box -->
+                <div class="slds-p-around_medium slds-m-bottom_medium" style="background: #fef2f2; border: 1px solid #fee2e2; border-radius: 6px; display: flex; gap: 10px; align-items: flex-start;">
+                    <span style="font-size: 20px;">🛡️</span>
+                    <div style="font-size: 12px; color: #991b1b;">
+                        <strong style="display: block; margin-bottom: 2px;">Refund Policy</strong>
+                        Cancellations processed through this portal will automatically void the tickets and initiate a refund for the total amount paid ({bookingTotalAmount}). The refund log will be created in an 'Initiated' state.
+                    </div>
+                </div>
+
+                <!-- Input Reason -->
+                <lightning-textarea
+                    label="Cancellation Reason"
+                    placeholder="Provide a detailed reason for cancellation (required)..."
+                    required
+                    value={reason}
+                    onchange={handleReasonChange}
+                    disabled={processing}
+                    message-when-value-missing="Please provide a valid cancellation reason.">
+                </lightning-textarea>
+            </div>
+
+            <!-- Modal Footer -->
+            <footer class="slds-modal__footer" style="background: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+                <lightning-button 
+                    label="Close" 
+                    onclick={handleClose} 
+                    disabled={processing} 
+                    class="slds-m-right_x-small">
+                </lightning-button>
+                <lightning-button 
+                    variant="destructive" 
+                    label="Confirm Cancellation" 
+                    onclick={handleConfirm}
+                    disabled={isConfirmDisabled}>
+                </lightning-button>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Refund__c$Name</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Refund__c$Refund_Amount__c</field>
+    </columns>
+    <columns>
+        <field>Refund__c$Id</field>
+    </columns>
+    <columns>
+        <field>Refund__c$Refund_Status__c</field>
+    </columns>
+    <columns>
+        <field>Refund__c$Requested_Date__c</field>
+    </columns>
+    <columns>
+        <field>Refund__c$Booking__c</field>
+    </columns>
+    <filter>
+        <criteriaItems>
+            <column>Refund__c$Refund_Status__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Initiated,Processing</value>
+        </criteriaItems>
+        <language>en_US</language>
+    </filter>
+    <format>Tabular</format>
+    <name>Refund Tracking Report</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Refunds_with_Bookings__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Refund__c$Completed_Date__c</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

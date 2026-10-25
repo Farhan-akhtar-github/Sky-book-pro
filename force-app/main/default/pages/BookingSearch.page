@@ -1,0 +1,360 @@
+<apex:page controller="BookingSearchController" lightningStylesheets="true" title="SkyBook Pro – Booking Search" docType="html-5.0">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+        <style>
+            :root {
+                --primary:       hsl(210, 80%, 40%);
+                --primary-dark:  hsl(210, 80%, 30%);
+                --primary-light: hsl(210, 80%, 95%);
+                --success:       hsl(140, 60%, 40%);
+                --danger:        hsl(0, 75%, 45%);
+                --bg:            #f3f4f6;
+                --card:          #ffffff;
+                --text:          #1f2937;
+                --text-muted:    #6b7280;
+                --border:        #e5e7eb;
+                --radius:        10px;
+                --shadow:        0 2px 12px rgba(0,0,0,0.08);
+            }
+
+            body, .bPageBlock, .bPageBlockSection, .pbBody, .pbHeader {
+                font-family: 'Inter', sans-serif !important;
+            }
+
+            /* ── Layout ─────────────────────────────────────────── */
+            .skp-page       { background: var(--bg); min-height: 100vh; padding: 24px; box-sizing: border-box; }
+            .skp-header     { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+            .skp-logo       { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), hsl(210, 80%, 55%)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px; }
+            .skp-title      { font-size: 24px; font-weight: 700; color: var(--text); }
+            .skp-subtitle   { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+            /* ── Cards ──────────────────────────────────────────── */
+            .skp-card       { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 20px; }
+            .skp-card-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+
+            /* ── Form fields ────────────────────────────────────── */
+            .skp-field      { display: flex; flex-direction: column; gap: 5px; }
+            .skp-label      { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+            .skp-input      { width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; color: var(--text); font-family: 'Inter', sans-serif; transition: border-color 0.2s, box-shadow 0.2s; box-sizing: border-box; }
+            .skp-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px hsla(210, 80%, 40%, 0.12); }
+
+            /* native lookup input override */
+            .skp-lookup-wrap .lookupInput,
+            .skp-lookup-wrap input[type="text"] {
+                width: 100% !important; padding: 10px 13px !important;
+                border: 1.5px solid var(--border) !important; border-radius: 8px !important;
+                font-size: 14px !important; color: var(--text) !important;
+                font-family: 'Inter', sans-serif !important; box-sizing: border-box !important;
+            }
+
+            /* ── Buttons ─────────────────────────────────────────── */
+            .skp-btn         { padding: 10px 22px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; font-family: 'Inter', sans-serif; }
+            .skp-btn:active  { transform: scale(0.98); }
+            .skp-btn-primary { background: var(--primary); color: white; }
+            .skp-btn-primary:hover { background: var(--primary-dark); }
+            .skp-btn-success { background: var(--success); color: white; font-size: 12px; padding: 7px 14px; }
+            .skp-btn-success:hover { background: hsl(140, 60%, 32%); }
+            .skp-btn-outline { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
+            .skp-btn-outline:hover { background: var(--primary-light); }
+            .skp-actions-row { display: flex; align-items: center; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+
+            /* ── Alerts ──────────────────────────────────────────── */
+            .skp-alert         { padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 16px; }
+            .skp-alert-error   { background: hsl(0, 75%, 97%); color: var(--danger); border: 1px solid hsl(0, 75%, 85%); }
+            .skp-alert-success { background: hsl(140, 60%, 96%); color: var(--success); border: 1px solid hsl(140, 60%, 80%); }
+
+            /* ── Tables ──────────────────────────────────────────── */
+            .skp-table-wrap { overflow-x: auto; }
+            .skp-table      { width: 100%; border-collapse: collapse; font-size: 13px; }
+            .skp-table thead th { padding: 10px 14px; background: hsl(210, 20%, 97%); color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1.5px solid var(--border); text-align: left; white-space: nowrap; }
+            .skp-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+            .skp-table tbody tr:hover { background: hsl(210, 80%, 98%); }
+            .skp-table tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
+
+            /* ── Status badges ───────────────────────────────────── */
+            .skp-badge          { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+            .skp-badge-green    { background: hsl(140, 60%, 92%); color: hsl(140, 60%, 28%); }
+            .skp-badge-blue     { background: hsl(210, 80%, 92%); color: hsl(210, 80%, 28%); }
+            .skp-badge-yellow   { background: hsl(45, 90%, 92%);  color: hsl(45, 90%, 28%);  }
+            .skp-badge-red      { background: hsl(0, 75%, 92%);   color: hsl(0, 75%, 30%);   }
+            .skp-badge-grey     { background: hsl(210, 10%, 92%); color: hsl(210, 10%, 35%); }
+
+            /* ── Misc ────────────────────────────────────────────── */
+            .skp-amount  { font-weight: 700; color: var(--primary); }
+            .skp-empty   { text-align: center; padding: 32px 24px; color: var(--text-muted); font-size: 14px; }
+            .skp-section-sep { border: none; border-top: 1.5px solid var(--border); margin: 0 0 20px 0; }
+        </style>
+    </head>
+    <apex:form id="mainForm">
+        <div class="skp-page">
+
+            <!-- ══════════════════════════════════════════════════
+                 Section 1 · Page Header
+            ═══════════════════════════════════════════════════ -->
+            <div class="skp-header">
+                <div class="skp-logo">✈</div>
+                <div>
+                    <div class="skp-title">SkyBook Pro</div>
+                    <div class="skp-subtitle">Booking Search &amp; Management</div>
+                </div>
+            </div>
+
+            <!-- ── Alert Panel ─────────────────────────────────── -->
+            <apex:outputPanel id="alertPanel">
+                <apex:outputPanel rendered="{!NOT(ISBLANK(errorMessage))}">
+                    <div class="skp-alert skp-alert-error">⚠ <apex:outputText value="{!errorMessage}"/></div>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!NOT(ISBLANK(successMessage))}">
+                    <div class="skp-alert skp-alert-success">✓ <apex:outputText value="{!successMessage}"/></div>
+                </apex:outputPanel>
+            </apex:outputPanel>
+
+            <!-- ══════════════════════════════════════════════════
+                 Section 2 · Global Search Card
+            ═══════════════════════════════════════════════════ -->
+            <div class="skp-card">
+                <div class="skp-card-title">🔍 Global Search</div>
+
+                <div class="skp-field">
+                    <label class="skp-label" for="searchTermInput">Search Term</label>
+                    <apex:inputText id="searchTermInput"
+                                    value="{!searchTerm}"
+                                    html-placeholder="Enter passenger name, email, or booking number…"
+                                    styleClass="skp-input"/>
+                </div>
+
+                <div class="skp-actions-row">
+                    <apex:commandButton id="searchBtn"
+                                        value="Search"
+                                        action="{!search}"
+                                        styleClass="skp-btn skp-btn-primary"
+                                        reRender="alertPanel,resultPanel"/>
+                    <apex:commandButton id="clearBtn"
+                                        value="Clear"
+                                        action="{!clearSearch}"
+                                        styleClass="skp-btn skp-btn-outline"
+                                        reRender="alertPanel,resultPanel"/>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════
+                 Section 3 · Passenger History Filter Card
+            ═══════════════════════════════════════════════════ -->
+            <div class="skp-card">
+                <div class="skp-card-title">👤 Passenger Booking History</div>
+
+                <div class="skp-field skp-lookup-wrap">
+                    <label class="skp-label">Select Passenger (Contact)</label>
+                    <apex:inputField id="passengerLookup"
+                                     value="{!dummyBooking.Passenger__c}"/>
+                </div>
+
+                <div class="skp-actions-row">
+                    <apex:commandButton id="loadHistoryBtn"
+                                        value="Load History"
+                                        action="{!loadContactHistory}"
+                                        styleClass="skp-btn skp-btn-primary"
+                                        reRender="alertPanel,resultPanel"/>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════
+                 Result Panel  (all data tables live here so
+                 a single reRender target refreshes everything)
+            ═══════════════════════════════════════════════════ -->
+            <apex:outputPanel id="resultPanel">
+
+                <!-- ── Section 4 · My Confirmed Bookings ──────── -->
+                <div class="skp-card">
+                    <div class="skp-card-title">📋 My Confirmed Bookings</div>
+
+                    <apex:outputPanel rendered="{!agentBookings.size == 0}">
+                        <div class="skp-empty">No confirmed bookings found for your account.</div>
+                    </apex:outputPanel>
+
+                    <apex:outputPanel rendered="{!agentBookings.size > 0}">
+                        <div class="skp-table-wrap">
+                            <table class="skp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Booking Number</th>
+                                        <th>Passenger</th>
+                                        <th>Status</th>
+                                        <th>Seats</th>
+                                        <th>Amount</th>
+                                        <th>Booking Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <apex:repeat value="{!agentBookings}" var="bk">
+                                        <tr>
+                                            <td><strong><apex:outputText value="{!bk.Name}"/></strong></td>
+                                            <td><apex:outputText value="{!bk.Passenger__r.Name}"/></td>
+                                            <td>
+                                                <span class="skp-badge skp-badge-green">
+                                                    <apex:outputText value="{!bk.Booking_Status__c}"/>
+                                                </span>
+                                            </td>
+                                            <td><apex:outputText value="{!bk.Number_of_Seats__c}"/></td>
+                                            <td>
+                                                <span class="skp-amount">
+                                                    <apex:outputText value="{0,number,#,##0.00}">
+                                                        <apex:param value="{!bk.Total_Amount__c}"/>
+                                                    </apex:outputText>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <apex:outputText value="{0,date,dd/MM/yyyy}">
+                                                    <apex:param value="{!bk.Booking_Date__c}"/>
+                                                </apex:outputText>
+                                            </td>
+                                            <td>
+                                                <apex:commandLink action="{!viewBooking}" styleClass="skp-btn skp-btn-success">
+                                                    View →
+                                                    <apex:param name="viewBkId" value="{!bk.Id}" assignTo="{!selectedBookingId}"/>
+                                                </apex:commandLink>
+                                            </td>
+                                        </tr>
+                                    </apex:repeat>
+                                </tbody>
+                            </table>
+                        </div>
+                    </apex:outputPanel>
+                </div>
+
+                <!-- ── Section 5 · SOSL Contact Results ───────── -->
+                <apex:outputPanel rendered="{!searchContacts.size > 0}">
+                    <div class="skp-card">
+                        <div class="skp-card-title">👥 Contact Search Results</div>
+                        <div class="skp-table-wrap">
+                            <table class="skp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <apex:repeat value="{!searchContacts}" var="con">
+                                        <tr>
+                                            <td>
+                                                <apex:outputLink value="/{!con.Id}">
+                                                    <apex:outputText value="{!con.Name}"/>
+                                                </apex:outputLink>
+                                            </td>
+                                            <td><apex:outputText value="{!IF(ISBLANK(con.Email), '–', con.Email)}"/></td>
+                                            <td><apex:outputText value="{!IF(ISBLANK(con.Phone), '–', con.Phone)}"/></td>
+                                        </tr>
+                                    </apex:repeat>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+
+                <!-- ── Section 6 · SOSL Booking Results ───────── -->
+                <apex:outputPanel rendered="{!searchBookings.size > 0}">
+                    <div class="skp-card">
+                        <div class="skp-card-title">🔖 Booking Search Results</div>
+                        <div class="skp-table-wrap">
+                            <table class="skp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Booking Number</th>
+                                        <th>Passenger</th>
+                                        <th>Status</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <apex:repeat value="{!searchBookings}" var="sb">
+                                        <tr>
+                                            <td>
+                                                <apex:outputLink value="/apex/BookingDetail?id={!sb.Id}">
+                                                    <strong><apex:outputText value="{!sb.Name}"/></strong>
+                                                </apex:outputLink>
+                                            </td>
+                                            <td><apex:outputText value="{!sb.Passenger__r.Name}"/></td>
+                                            <td>
+                                                <span class="skp-badge skp-badge-blue">
+                                                    <apex:outputText value="{!sb.Booking_Status__c}"/>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="skp-amount">
+                                                    <apex:outputText value="{0,number,#,##0.00}">
+                                                        <apex:param value="{!sb.Total_Amount__c}"/>
+                                                    </apex:outputText>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </apex:repeat>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+
+                <!-- ── Section 7 · Passenger Booking History ──── -->
+                <apex:outputPanel rendered="{!contactHistoryBookings.size > 0}">
+                    <div class="skp-card">
+                        <div class="skp-card-title">📅 Passenger Booking History</div>
+                        <div class="skp-table-wrap">
+                            <table class="skp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Booking Number</th>
+                                        <th>Status</th>
+                                        <th>Seats</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <apex:repeat value="{!contactHistoryBookings}" var="hb">
+                                        <tr>
+                                            <td>
+                                                <strong><apex:outputText value="{!hb.Name}"/></strong>
+                                            </td>
+                                            <td>
+                                                <span class="skp-badge skp-badge-yellow">
+                                                    <apex:outputText value="{!hb.Booking_Status__c}"/>
+                                                </span>
+                                            </td>
+                                            <td><apex:outputText value="{!hb.Number_of_Seats__c}"/></td>
+                                            <td>
+                                                <span class="skp-amount">
+                                                    <apex:outputText value="{0,number,#,##0.00}">
+                                                        <apex:param value="{!hb.Total_Amount__c}"/>
+                                                    </apex:outputText>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <apex:outputText value="{0,date,dd/MM/yyyy}">
+                                                    <apex:param value="{!hb.Booking_Date__c}"/>
+                                                </apex:outputText>
+                                            </td>
+                                            <td>
+                                                <apex:commandLink action="{!viewBooking}" styleClass="skp-btn skp-btn-success">
+                                                    View →
+                                                    <apex:param name="viewHistoryBkId" value="{!hb.Id}" assignTo="{!selectedBookingId}"/>
+                                                </apex:commandLink>
+                                            </td>
+                                        </tr>
+                                    </apex:repeat>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+
+            </apex:outputPanel>
+            <!-- /resultPanel -->
+
+        </div>
+    </apex:form>
+</apex:page>
